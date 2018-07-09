@@ -1,0 +1,47 @@
+<h1 class="title">World Cup News!</h1>
+<h2 class="title">Mongo DB Headline Scraper</h2>
+
+
+
+{{#each headline}}
+<article class="media">
+  <figure class="media-left">
+    <p class="image is-64x64">
+      <img src="https://bulma.io/images/placeholders/128x128.png">
+    </p>
+  </figure>
+  <div class="media-content">
+    <div class="content">
+      <p>
+        <strong>{{title}}</strong>
+
+        <br>
+        <strong>{{link}}</strong>
+        <br>
+        <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
+      </p>
+    </div>
+ </div>
+</article>
+  {{/each}}
+
+
+<article class="media">
+  <figure class="media-left">
+    <p class="image is-64x64">
+      <img src="https://bulma.io/images/placeholders/128x128.png">
+    </p>
+  </figure>
+  <div class="media-content">
+    <div class="field">
+      <p class="control">
+        <textarea class="textarea" placeholder="Add a comment..."></textarea>
+      </p>
+    </div>
+    <div class="field">
+      <p class="control">
+        <button class="button">Post comment</button>
+      </p>
+    </div>
+  </div>
+</article>

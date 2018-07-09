@@ -27,27 +27,35 @@ app.use(bodyParser.urlencoded({
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
+// Set Handlebars.
+var exphbs = require("express-handlebars");
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/scraperFIFA");
 
 db.Headline.create({
     name: "Russia Wins 2018 World Cup"
 })
+let results = {};
 
 // Main route (simple Hello World Message)
 app.get("/", function (req, res) {
-    res.send("Hello world");
+    res.render("index");
 });
 
 app.get("/scrape", function (req, res) {
+    results = {};
+
     request("http://www.lance.com.br/copa-do-mundo", function (error, response, html) {
         //   console.log(html)
         // Load the HTML into cheerio and save it to a variable
         // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
-        var $ = cheerio.load(html);
+        let $ = cheerio.load(html);
 
         // An empty array to save the data that we'll scrape
-        var results = {};
 
         // With cheerio, find each p-tag with the "title" class
         // (i: iterator. element: the current element)
@@ -65,76 +73,36 @@ app.get("/scrape", function (req, res) {
             db.Note.create(results)
                 .then(function (dbArticle) {
                     // View the added result in the console
-                    console.log(dbArticle);
+                    console.log(`this is the created note --->${dbArticle}`);
                 })
                 .catch(function (err) {
                     // If an error occurred, send it to the client
                     return res.json(err);
                 });
-
-            // Log the results once you've looped through each of the elements found with cheerio
-            // res.json(results);
         });
-
-        res.send("Scrape Complete");
-
         /* -/-/-/-/-/-/-/-/-/-/-/-/- */
     });
-    request('http://www.lance.com.br/copa-do-mundo `${}`', function (error, response, html) {
-        //   console.log(html)
-        // Load the HTML into cheerio and save it to a variable
-        // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
-        var $ = cheerio.load(html);
 
-        // An empty array to save the data that we'll scrape
-        var results = {};
-
-        // With cheerio, find each p-tag with the "title" class
-        // (i: iterator. element: the current element)
-        $(".title").each(function (i, element) {
-
-            // Save the text of the element in a "title" variable
-            // Add the text and href of every link, and save them as properties of the result object
-            results.title = $(this)
-                // .children("a")
-                .text();
-            results.link = $(this)
-                // .children("a")
-                .attr("href");
-
-            db.Note.create(results)
-                .then(function (dbArticle) {
-                    // View the added result in the console
-                    console.log(dbArticle);
-                })
-                .catch(function (err) {
-                    // If an error occurred, send it to the client
-                    return res.json(err);
-                });
-
-            // Log the results once you've looped through each of the elements found with cheerio
-            // res.json(results);
-        });
-
-        res.send("Scrape Complete");
-
-        /* -/-/-/-/-/-/-/-/-/-/-/-/- */
-    });
+    res.send("Scrape Complete");
 });
 
 // Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
+app.get("/articles", function (req, res) {
     // Grab every document in the Articles collection
     db.Note.find({})
-      .then(function(dbArticle) {
-        // If we were able to successfully find Articles, send them back to the client
-        res.json(dbArticle);
-      })
-      .catch(function(err) {
-        // If an error occurred, send it to the client
-        res.json(err);
-      });
-  });
+        .then(function (dbArticle) {
+            let Headliner = {
+                headline: dbArticle
+              };
+            console.log(Headliner); 
+            // If we were able to successfully find Articles, send them back to the client
+            res.render("articles", Headliner);
+        })
+        .catch(function (err) {
+            // If an error occurred, send it to the client
+            res.json(err);
+        });
+});
 
 // Start the server
 app.listen(PORT, function () {
@@ -156,7 +124,7 @@ app.listen(PORT, function () {
 //         res.json(err);
 //       });
 //   });
-  
+
 //   // Route for saving/updating an Article's associated Note
 //   app.post("/articles/:id", function(req, res) {
 //     // Create a new note and pass the req.body to the entry
@@ -176,4 +144,3 @@ app.listen(PORT, function () {
 //         res.json(err);
 //       });
 //   });
-  
