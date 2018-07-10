@@ -34,7 +34,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/scraperFIFA");
+mongoose.connect("mongodb://hellotest:hellotest123@ds233061.mlab.com:33061/heroku_h0f98lfs");
 
 db.Headline.create({
     name: "Russia Wins 2018 World Cup"
